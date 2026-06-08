@@ -181,7 +181,11 @@ TimePicker/
 
 ## 📸 Screenshots
 
-_Screenshots coming soon._
+<p align="left">
+   <img src="Screenshots/time-picker.png" alt="TimePicker rows in a form" width="200" />
+   <img src="Screenshots/time-picker-sheet-with-hms.png" alt="Sheet with hours, minutes, and seconds wheels" width="200" />
+   <img src="Screenshots/time-picker-sheet-with-hm.png" alt="Sheet with hours and minutes wheels" width="200" />
+</p>
 
 
 
