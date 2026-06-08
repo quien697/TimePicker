@@ -48,19 +48,17 @@ A SwiftUI control for picking a duration — hours, minutes, and seconds — fro
 
 ## 📦 Installation
 
-### Swift Package Manager
+### Local Swift Package
 
-In Xcode, go to **File → Add Package Dependencies…** and enter the repository URL:
+Clone or copy this repository next to your app, then add it as a local package.
 
-```
-https://github.com/quien697/TimePicker.git
-```
+In Xcode: **File → Add Package Dependencies… → Add Local…** and select the `TimePicker` folder.
 
-Or add it to your `Package.swift`:
+Or reference it by path in your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/quien697/TimePicker.git", from: "1.0.0")
+    .package(path: "../TimePicker")
 ]
 ```
 
@@ -168,13 +166,14 @@ Set `showsPlaceholderWhenZero: true` to render an empty value as `-- : --` inste
 
 ```text
 TimePicker/
-└─ Sources/
-   └─ TimePicker/
-      ├─ Configuration/   # TimePickerStyle
-      ├─ Formatting/      # DurationFormatter
-      ├─ Models/          # DurationUnit, DurationValue, TimePickerComponents
-      ├─ Resources/       # Localizable.xcstrings
-      └─ Views/           # TimePicker, TimePickerSheet, DurationWheelPicker, DurationWheelColumn
+├─ Sources/
+│  └─ TimePicker/
+│     ├─ Configuration/   # TimePickerStyle
+│     ├─ Formatting/      # DurationFormatter
+│     ├─ Models/          # DurationUnit, DurationValue, TimePickerComponents
+│     ├─ Resources/       # Localizable.xcstrings
+│     └─ Views/           # TimePicker, TimePickerSheet, DurationWheelPicker, DurationWheelColumn
+└─ TimePickerDemo/        # Example app
 ```
 
 
@@ -187,7 +186,12 @@ _Screenshots coming soon._
 
 ## 🚀 Getting Started
 
-Add the package to your project (see [Installation](#-installation)) and drop a `TimePicker` into a `Form`, bound to a `TimeInterval?` (see [Usage](#-usage)).
+A runnable example app lives in `TimePickerDemo/`. It demonstrates the component presets, `maximumHours`, a custom label, and live restyling via `.timePickerStyle(...)`, with each picker's bound `TimeInterval?` shown beneath it.
+
+1. Open `TimePickerDemo/TimePickerDemo.xcodeproj` in Xcode
+2. Build & run on simulator or device
+
+To use the picker in your own project, add the package (see [Installation](#-installation)) and drop a `TimePicker` into a `Form`, bound to a `TimeInterval?` (see [Usage](#-usage)).
 
 
 
