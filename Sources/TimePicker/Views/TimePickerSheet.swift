@@ -8,39 +8,54 @@
 import SwiftUI
 
 struct TimePickerSheet: View {
-  @Binding var draftDuration: HMSDuration
+  // MARK: - Environment
+  @Environment(\.timePickerStyle) private var style
+
+  // MARK: - Properties
+  @Binding var draftDuration: DurationValue
   @Binding var value: TimeInterval?
   @Binding var isPresenting: Bool
-  let title: String
-  let fontColor: Color
+  let title: LocalizedStringKey
+  let components: TimePickerComponents
+  let maximumHours: Int
 
+  // MARK: - Computed
+  private var formatter: DurationFormatter {
+    DurationFormatter(components: components)
+  }
+
+  // MARK: - Body
   var body: some View {
     NavigationStack {
       VStack {
-        Text(draftDuration.formattedString)
+        Text(formatter.string(from: draftDuration.timeInterval))
           .font(.title)
           .fontWeight(.bold)
           .frame(maxWidth: .infinity)
           .padding(.vertical)
-          .foregroundStyle(fontColor)
-          .background(fontColor.opacity(0.1))
-          .clipShape(.rect(cornerRadius: 20))
+          .foregroundStyle(style.accentColor)
+          .background(style.accentColor.opacity(0.1))
+          .clipShape(.rect(cornerRadius: style.cornerRadius))
           .overlay(
-            RoundedRectangle(cornerRadius: 20)
-              .stroke(fontColor.opacity(0.3), lineWidth: 1)
+            RoundedRectangle(cornerRadius: style.cornerRadius)
+              .stroke(style.accentColor.opacity(0.3), lineWidth: 1)
           )
           .padding()
 
-        DurationWheelPicker(duration: $draftDuration)
+        DurationWheelPicker(
+          duration: $draftDuration,
+          components: components,
+          maximumHours: maximumHours
+        )
 
         Spacer()
 
         Divider()
 
         Button {
-          draftDuration = HMSDuration()
+          draftDuration = DurationValue()
         } label: {
-          Text("Clear")
+          Text("Clear", bundle: .module)
             .foregroundStyle(.red)
         }
         .padding(.vertical, 8)
@@ -56,16 +71,16 @@ struct TimePickerSheet: View {
             value = draftDuration.isEmpty ? nil : draftDuration.timeInterval
             isPresenting = false
           }
-          .foregroundStyle(fontColor)
+          .foregroundStyle(style.accentColor)
         }
       }  // toolbar
-      .presentationDetents([.medium])
+      .presentationDetents(style.detents)
     }  // NavigationStack
   }
 }
 
 #Preview {
-  @Previewable @State var duration = HMSDuration(3 * 3600 + 20 * 60 + 44)
+  @Previewable @State var duration = DurationValue(3 * 3600 + 20 * 60 + 44)
   @Previewable @State var value: TimeInterval?
   @Previewable @State var isPresenting = true
 
@@ -74,6 +89,8 @@ struct TimePickerSheet: View {
     value: $value,
     isPresenting: $isPresenting,
     title: "Finish Time",
-    fontColor: .orange
+    components: .hoursMinutesSeconds,
+    maximumHours: 23
   )
+  .timePickerStyle(accentColor: .orange)
 }

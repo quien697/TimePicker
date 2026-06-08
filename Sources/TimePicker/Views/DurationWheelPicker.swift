@@ -8,28 +8,53 @@
 import SwiftUI
 
 struct DurationWheelPicker: View {
-  @Binding var duration: HMSDuration
+  @Binding var duration: DurationValue
+  let components: TimePickerComponents
+  let maximumHours: Int
 
   var body: some View {
     HStack {
-      WheelUnitPicker(
-        title: "Hour",
-        value: $duration.hours,
-        range: 0...24)
+      if components.contains(.hours) {
+        DurationWheelColumn(
+          title: "Hour",
+          value: $duration.hours,
+          range: 0...maximumHours)
+      }
 
-      WheelUnitPicker(
-        title: "Min",
-        value: $duration.minutes,
-        range: 0...59)
+      if components.contains(.minutes) {
+        DurationWheelColumn(
+          title: "Min",
+          value: $duration.minutes,
+          range: 0...59)
+      }
 
-      WheelUnitPicker(
-        title: "Sec",
-        value: $duration.seconds,
-        range: 0...59)
-    }
+      if components.contains(.seconds) {
+        DurationWheelColumn(
+          title: "Sec",
+          value: $duration.seconds,
+          range: 0...59)
+      }
+    }  // HStack
   }
 }
 
-#Preview {
-  DurationWheelPicker(duration: .constant(HMSDuration()))
+#Preview("hr : min : sec") {
+  DurationWheelPicker(
+    duration: .constant(DurationValue()),
+    components: .hoursMinutesSeconds,
+    maximumHours: 23)
+}
+
+#Preview("hr : min") {
+  DurationWheelPicker(
+    duration: .constant(DurationValue()),
+    components: .hoursMinutes,
+    maximumHours: 23)
+}
+
+#Preview("min : sec") {
+  DurationWheelPicker(
+    duration: .constant(DurationValue()),
+    components: .minutesSeconds,
+    maximumHours: 23)
 }

@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
   name: "TimePicker",
+  defaultLocalization: "en",
   platforms: [
     .iOS("26.0")
   ],
@@ -12,7 +13,9 @@ let package = Package(
     .library(name: "TimePicker", targets: ["TimePicker"])
   ],
   targets: [
-    .target(name: "TimePicker")
+    .target(
+      name: "TimePicker",
+      resources: [.process("Resources")])
   ],
   swiftLanguageModes: [.v6]
 )

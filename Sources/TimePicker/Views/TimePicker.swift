@@ -7,50 +7,63 @@
 
 import SwiftUI
 
+/// A control that presents a wheel-based duration picker in a sheet and binds the result to
+/// a `TimeInterval?`.
+///
+/// Configure which units appear with `components` (e.g. ``TimePickerComponents/minutesSeconds``)
+/// and the hours range with `maximumHours`. Theme it with
+/// ``SwiftUICore/View/timePickerStyle(_:)``. To render the same value elsewhere, use
+/// ``DurationFormatter``.
 public struct TimePicker<Label: View>: View {
+  // MARK: - Environment
+  @Environment(\.timePickerStyle) private var style
+
   // MARK: - State
-  @State private var draftDuration: HMSDuration
-  @State private var isPresentingPickerView: Bool = false
+  @State private var draftDuration: DurationValue
+  @State private var isPresentingPickerView = false
+
   // MARK: - Properties
-  private var label: Label
-  private var title: String
-  private var fontColor: Color
-  private var fontWeight: Font.Weight
-  @Binding var value: TimeInterval?
+  private let label: Label
+  private let title: LocalizedStringKey
+  private let components: TimePickerComponents
+  private let maximumHours: Int
+  @Binding private var value: TimeInterval?
 
   // MARK: - Init
   public init(
-    _ title: String = "Select Time",
-    fontColor: Color? = nil,
-    fontWeight: Font.Weight? = nil,
+    _ title: LocalizedStringKey = "Select Time",
+    components: TimePickerComponents = .hoursMinutesSeconds,
+    maximumHours: Int = 23,
     selection value: Binding<TimeInterval?>
   ) where Label == Text {
     self.title = title
-    self.fontColor = fontColor ?? .primary
-    self.fontWeight = fontWeight ?? .regular
+    self.components = components
+    self.maximumHours = maximumHours
     self.label = Text(title)
     self._value = value
-    self._draftDuration = State(initialValue: HMSDuration(value.wrappedValue))
+    self._draftDuration = State(initialValue: DurationValue(value.wrappedValue))
   }
 
   // MARK: - Custom label init
   public init(
-    _ title: String = "Select Time",
-    fontColor: Color? = nil,
-    fontWeight: Font.Weight? = nil,
+    _ title: LocalizedStringKey = "Select Time",
+    components: TimePickerComponents = .hoursMinutesSeconds,
+    maximumHours: Int = 23,
     selection value: Binding<TimeInterval?>,
     @ViewBuilder label: () -> Label
   ) {
     self.title = title
-    self.fontColor = fontColor ?? .primary
-    self.fontWeight = fontWeight ?? .regular
+    self.components = components
+    self.maximumHours = maximumHours
     self.label = label()
     self._value = value
-    self._draftDuration = State(initialValue: HMSDuration(value.wrappedValue))
+    self._draftDuration = State(initialValue: DurationValue(value.wrappedValue))
   }
 
   // MARK: - Computed
-  private var currentDuration: HMSDuration { HMSDuration(value) }
+  private var formatter: DurationFormatter {
+    DurationFormatter(components: components, showsPlaceholderWhenZero: true)
+  }
 
   // MARK: - Body
   public var body: some View {
@@ -60,12 +73,12 @@ public struct TimePicker<Label: View>: View {
       Spacer()
 
       Button {
-        draftDuration = currentDuration
+        draftDuration = DurationValue(value)
         isPresentingPickerView = true
       } label: {
-        Text(currentDuration.displayString)
-          .fontWeight(fontWeight)
-          .foregroundStyle(fontColor)
+        Text(formatter.string(from: value))
+          .fontWeight(style.fontWeight)
+          .foregroundStyle(style.accentColor)
       }
       .buttonStyle(.bordered)
     }  // HStack
@@ -75,8 +88,10 @@ public struct TimePicker<Label: View>: View {
         value: $value,
         isPresenting: $isPresentingPickerView,
         title: title,
-        fontColor: fontColor
+        components: components,
+        maximumHours: maximumHours
       )
+      .timePickerStyle(style)
     }
   }
 }
@@ -85,10 +100,11 @@ public struct TimePicker<Label: View>: View {
   NavigationStack {
     Form {
       TimePicker("Finish Time", selection: .constant(TimeInterval(3 * 3600 + 20 * 60 + 44)))
-      TimePicker("Finish Time", selection: .constant(nil)) {
-        Text("Finish Time")
+      TimePicker("Lap Time", components: .minutesSeconds, selection: .constant(nil)) {
+        Text("Lap Time")
       }
     }
     .navigationTitle("TimePicker Preview")
+    .timePickerStyle(accentColor: .orange)
   }
 }
